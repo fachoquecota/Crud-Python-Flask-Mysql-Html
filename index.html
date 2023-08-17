@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <!-- Enlace a Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#productoModal">
+        Añadir Producto
+    </button>
+
+    <h1 class="mb-4">Productos</h1>
+    <table id="productosTable" class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los productos se insertarán aquí desde JavaScript -->
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" id="productoModal" tabindex="-1" role="dialog" aria-labelledby="productoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productoModalLabel">Añadir Producto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productoForm">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" id="descripcion" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="precio">Precio:</label>
+                        <input type="number" id="precio" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock:</label>
+                        <input type="number" id="stock" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" onclick="insertarProducto()" class="btn btn-success">Añadir Producto</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal para Actualizar Producto -->
+<div class="modal fade" id="actualizarProductoModal" tabindex="-1" role="dialog" aria-labelledby="actualizarProductoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actualizarProductoModalLabel">Actualizar Producto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="actualizarProductoForm">
+                    <input type="hidden" id="productoId"> <!-- Campo oculto para almacenar el ID del producto -->
+                    <div class="form-group">
+                        <label for="actualizarNombre">Nombre:</label>
+                        <input type="text" id="actualizarNombre" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="actualizarDescripcion">Descripción:</label>
+                        <input type="text" id="actualizarDescripcion" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="actualizarPrecio">Precio:</label>
+                        <input type="number" id="actualizarPrecio" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="actualizarStock">Stock:</label>
+                        <input type="number" id="actualizarStock" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" onclick="enviarActualizacion()" class="btn btn-success">Actualizar Producto</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para cargar productos desde la API y mostrarlos en la tabla
+    function cargarProductos() {
+        fetch('http://127.0.0.1:5000/productos')
+        .then(response => response.json())
+        .then(data => {
+            let tabla = document.getElementById('productosTable').getElementsByTagName('tbody')[0];
+            tabla.innerHTML = "";  // Limpiar la tabla primero
+            data.forEach(producto => {
+                let fila = tabla.insertRow();
+                fila.insertCell(0).innerHTML = producto.id_producto;
+                fila.insertCell(1).innerHTML = producto.nombre;
+                fila.insertCell(2).innerHTML = producto.descripcion;
+                fila.insertCell(3).innerHTML = producto.precio;
+                fila.insertCell(4).innerHTML = producto.stock;
+
+                // Añadir botones de actualizar y eliminar
+                let acciones = fila.insertCell(5);
+                acciones.innerHTML = `<button onclick="actualizarProducto(${producto.id_producto})" class="btn btn-primary btn-sm">Actualizar</button> 
+                                      <button onclick="eliminarProducto(${producto.id_producto})" class="btn btn-danger btn-sm">Eliminar</button>`;
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar los productos:', error);
+        });
+    }
+
+    function actualizarProducto(id) {
+    // Obtener el producto actual (esto puede ser opcional si ya tienes la información en la tabla)
+    fetch(`http://127.0.0.1:5000/producto/${id}`)
+    .then(response => response.json())
+    .then(producto => {
+        // Rellenar el formulario con los datos actuales del producto
+        document.getElementById('productoId').value = producto.id_producto;
+        document.getElementById('actualizarNombre').value = producto.nombre;
+        document.getElementById('actualizarDescripcion').value = producto.descripcion;
+        document.getElementById('actualizarPrecio').value = producto.precio;
+        document.getElementById('actualizarStock').value = producto.stock;
+
+        // Mostrar el modal
+        $('#actualizarProductoModal').modal('show');
+    })
+        .catch(error => {
+            console.error('Error al obtener el producto:', error);
+        });
+    }
+    function enviarActualizacion() {
+    let id = document.getElementById('productoId').value;
+    let nombre = document.getElementById('actualizarNombre').value;
+    let descripcion = document.getElementById('actualizarDescripcion').value;
+    let precio = parseFloat(document.getElementById('actualizarPrecio').value);
+    let stock = parseInt(document.getElementById('actualizarStock').value);
+
+    if (nombre && descripcion && !isNaN(precio) && !isNaN(stock)) {
+        let productoActualizado = {
+            nombre: nombre,
+            descripcion: descripcion,
+            precio: precio,
+            stock: stock
+        };
+
+        fetch(`http://127.0.0.1:5000/producto/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productoActualizado)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            cargarProductos();
+            $('#actualizarProductoModal').modal('hide'); // Cerrar el modal
+        })
+        .catch(error => {
+            console.error('Error al actualizar el producto:', error);
+            alert('Ocurrió un error al actualizar el producto. Por favor, inténtalo de nuevo.');
+        });
+    } else {
+        alert('Por favor, ingresa todos los campos correctamente.');
+    }
+}
+
+
+
+
+    function eliminarProducto(id) {
+    let confirmacion = confirm("¿Estás seguro de que deseas eliminar este producto?");
+    if (confirmacion) {
+        // Realizar una solicitud DELETE a la API para eliminar el producto
+        fetch(`http://127.0.0.1:5000/producto/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // Mostrar un mensaje con la respuesta del servidor
+            cargarProductos();   // Recargar la lista de productos
+        })
+        .catch(error => {
+            console.error('Error al eliminar el producto:', error);
+            alert('Ocurrió un error al eliminar el producto. Por favor, inténtalo de nuevo.');
+        });
+    }
+    }
+    function insertarProducto() {
+        let nombre = document.getElementById('nombre').value;
+        let descripcion = document.getElementById('descripcion').value;
+        let precio = parseFloat(document.getElementById('precio').value);
+        let stock = parseInt(document.getElementById('stock').value);
+
+        if (nombre && descripcion && !isNaN(precio) && !isNaN(stock)) {
+            let nuevoProducto = {
+                nombre: nombre,
+                descripcion: descripcion,
+                precio: precio,
+                stock: stock
+            };
+
+            fetch('http://127.0.0.1:5000/producto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevoProducto)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                cargarProductos();   // Recargar la lista de productos
+                // Limpiar el formulario
+                document.getElementById('productoForm').reset();
+            })
+            .catch(error => {
+                console.error('Error al insertar el producto:', error);
+                alert('Ocurrió un error al insertar el producto. Por favor, inténtalo de nuevo.');
+            });
+        } else {
+            alert('Por favor, ingresa todos los campos correctamente.');
+        }
+    }
+
+
+    // Llamar a la función al cargar la página
+    window.onload = cargarProductos;
+</script>
+
+<!-- Enlace a Bootstrap JS y Popper.js (opcional, pero necesario para algunos componentes de Bootstrap) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
