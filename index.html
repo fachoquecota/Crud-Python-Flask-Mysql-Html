@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos</title>
-    <!-- Enlace a Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -27,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Los productos se insertarán aquí desde JavaScript -->
+
         </tbody>
     </table>
 </div>
@@ -67,7 +66,7 @@
         </div>
     </div>
 </div>
-<!-- Modal para Actualizar Producto -->
+
 <div class="modal fade" id="actualizarProductoModal" tabindex="-1" role="dialog" aria-labelledby="actualizarProductoModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -79,7 +78,7 @@
             </div>
             <div class="modal-body">
                 <form id="actualizarProductoForm">
-                    <input type="hidden" id="productoId"> <!-- Campo oculto para almacenar el ID del producto -->
+                    <input type="hidden" id="productoId"> 
                     <div class="form-group">
                         <label for="actualizarNombre">Nombre:</label>
                         <input type="text" id="actualizarNombre" class="form-control">
@@ -107,13 +106,13 @@
 </div>
 
 <script>
-    // Función para cargar productos desde la API y mostrarlos en la tabla
+
     function cargarProductos() {
         fetch('http://127.0.0.1:5000/productos')
         .then(response => response.json())
         .then(data => {
             let tabla = document.getElementById('productosTable').getElementsByTagName('tbody')[0];
-            tabla.innerHTML = "";  // Limpiar la tabla primero
+            tabla.innerHTML = "";  
             data.forEach(producto => {
                 let fila = tabla.insertRow();
                 fila.insertCell(0).innerHTML = producto.id_producto;
@@ -122,7 +121,7 @@
                 fila.insertCell(3).innerHTML = producto.precio;
                 fila.insertCell(4).innerHTML = producto.stock;
 
-                // Añadir botones de actualizar y eliminar
+
                 let acciones = fila.insertCell(5);
                 acciones.innerHTML = `<button onclick="actualizarProducto(${producto.id_producto})" class="btn btn-primary btn-sm">Actualizar</button> 
                                       <button onclick="eliminarProducto(${producto.id_producto})" class="btn btn-danger btn-sm">Eliminar</button>`;
@@ -134,18 +133,18 @@
     }
 
     function actualizarProducto(id) {
-    // Obtener el producto actual (esto puede ser opcional si ya tienes la información en la tabla)
+
     fetch(`http://127.0.0.1:5000/producto/${id}`)
     .then(response => response.json())
     .then(producto => {
-        // Rellenar el formulario con los datos actuales del producto
+
         document.getElementById('productoId').value = producto.id_producto;
         document.getElementById('actualizarNombre').value = producto.nombre;
         document.getElementById('actualizarDescripcion').value = producto.descripcion;
         document.getElementById('actualizarPrecio').value = producto.precio;
         document.getElementById('actualizarStock').value = producto.stock;
 
-        // Mostrar el modal
+
         $('#actualizarProductoModal').modal('show');
     })
         .catch(error => {
@@ -178,7 +177,7 @@
         .then(data => {
             alert(data.message);
             cargarProductos();
-            $('#actualizarProductoModal').modal('hide'); // Cerrar el modal
+            $('#actualizarProductoModal').modal('hide'); 
         })
         .catch(error => {
             console.error('Error al actualizar el producto:', error);
@@ -195,14 +194,13 @@
     function eliminarProducto(id) {
     let confirmacion = confirm("¿Estás seguro de que deseas eliminar este producto?");
     if (confirmacion) {
-        // Realizar una solicitud DELETE a la API para eliminar el producto
         fetch(`http://127.0.0.1:5000/producto/${id}`, {
             method: 'DELETE'
         })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);  // Mostrar un mensaje con la respuesta del servidor
-            cargarProductos();   // Recargar la lista de productos
+            alert(data.message);  //mostrar un mensaje con la respuesta del servidor
+            cargarProductos();   //recargar la lista de productos
         })
         .catch(error => {
             console.error('Error al eliminar el producto:', error);
@@ -248,11 +246,9 @@
     }
 
 
-    // Llamar a la función al cargar la página
     window.onload = cargarProductos;
 </script>
 
-<!-- Enlace a Bootstrap JS y Popper.js (opcional, pero necesario para algunos componentes de Bootstrap) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

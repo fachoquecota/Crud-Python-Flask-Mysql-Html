@@ -12,19 +12,15 @@ CREATE TABLE productos (
 INSERT INTO productos (nombre, descripcion, precio, stock) 
 VALUES ('Laptop Gamer', 'Laptop con 16GB RAM, 1TB SSD, NVIDIA RTX 3060', 1200.50, 10);
 
--- Insertando el segundo producto
 INSERT INTO productos (nombre, descripcion, precio, stock) 
 VALUES ('Smartphone Pro', 'Smartphone con pantalla OLED de 6.5 pulgadas, 128GB almacenamiento', 800.00, 25);
 
--- Insertando el tercer producto
 INSERT INTO productos (nombre, descripcion, precio, stock) 
 VALUES ('Audífonos Bluetooth', 'Audífonos inalámbricos con cancelación de ruido', 150.75, 30);
 
--- Insertando el cuarto producto
 INSERT INTO productos (nombre, descripcion, precio, stock) 
 VALUES ('Teclado Mecánico', 'Teclado con switches azules y retroiluminación RGB', 70.00, 15);
 
--- Insertando el quinto producto
 INSERT INTO productos (nombre, descripcion, precio, stock) 
 VALUES ('Mouse Gamer', 'Mouse con 8 botones programables y DPI ajustable', 45.99, 20);
 
